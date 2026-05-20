@@ -1,0 +1,140 @@
+<!-- login.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Git Login</title>
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, sans-serif;
+    }
+
+    body{
+      height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      background:#0f172a;
+    }
+
+    .login-container{
+      width:400px;
+      background:white;
+      padding:40px;
+      border-radius:15px;
+      box-shadow:0 0 20px rgba(0,0,0,0.2);
+    }
+
+    h1{
+      text-align:center;
+      margin-bottom:30px;
+      color:#111827;
+    }
+
+    .input-group{
+      margin-bottom:20px;
+    }
+
+    .input-group label{
+      display:block;
+      margin-bottom:8px;
+      font-weight:bold;
+    }
+
+    .input-group input{
+      width:100%;
+      padding:12px;
+      border:1px solid #ccc;
+      border-radius:8px;
+      font-size:16px;
+    }
+
+    button{
+      width:100%;
+      padding:12px;
+      border:none;
+      border-radius:8px;
+      background:#2563eb;
+      color:white;
+      font-size:16px;
+      cursor:pointer;
+      transition:0.3s;
+    }
+
+    button:hover{
+      background:#1d4ed8;
+    }
+
+    .error{
+      margin-top:15px;
+      color:red;
+      text-align:center;
+      display:none;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="login-container">
+
+    <h1>Git Login</h1>
+
+    <div class="input-group">
+      <label>Username</label>
+      <input type="text" id="username" placeholder="Enter username">
+    </div>
+
+    <div class="input-group">
+      <label>Password</label>
+      <input type="password" id="password" placeholder="Enter password">
+    </div>
+
+    <button onclick="login()">
+      Login
+    </button>
+
+    <p class="error" id="error">
+      Please enter username and password
+    </p>
+
+  </div>
+
+  <script>
+
+    function login(){
+
+      let username =
+        document.getElementById("username").value;
+
+      let password =
+        document.getElementById("password").value;
+
+      if(username.trim() === "" ||
+         password.trim() === ""){
+
+          document.getElementById("error")
+          .style.display = "block";
+
+          return;
+      }
+
+      localStorage.setItem("loggedIn", "true");
+      localStorage.setItem("username", username);
+
+      // SAFE REDIRECT
+      window.location.replace("index.html");
+    }
+
+  </script>
+
+</body>
+</html>

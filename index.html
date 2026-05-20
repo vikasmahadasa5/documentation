@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Documentation Site</title>
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial,sans-serif;
+    }
+
+    body{
+      display:flex;
+      height:100vh;
+      overflow:hidden;
+    }
+
+    /* SIDEBAR */
+
+    .sidebar{
+      width:300px;
+      background:#111827;
+      color:white;
+      overflow-y:auto;
+      padding:20px;
+    }
+
+    .sidebar h1{
+      text-align:center;
+      margin-bottom:20px;
+    }
+
+    .chapter{
+      background:#1f2937;
+      margin-bottom:15px;
+      padding:10px;
+      border-radius:10px;
+    }
+
+    .chapter-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:10px;
+    }
+
+    .chapter-title{
+      font-size:18px;
+      font-weight:bold;
+    }
+
+    .edit-btn{
+      background:#2563eb;
+      border:none;
+      color:white;
+      padding:5px 10px;
+      border-radius:5px;
+      cursor:pointer;
+    }
+
+    ul{
+      list-style:none;
+    }
+
+    li{
+      padding:8px;
+      border-radius:5px;
+      cursor:pointer;
+      transition:0.3s;
+    }
+
+    li:hover{
+      background:#374151;
+    }
+
+    /* MAIN CONTENT */
+
+    .main{
+      flex:1;
+      overflow-y:auto;
+      background:#f3f4f6;
+      padding:30px;
+    }
+
+    .topbar{
+      background:white;
+      padding:15px;
+      border-radius:10px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:20px;
+      box-shadow:0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .logout-btn{
+      background:red;
+      color:white;
+      border:none;
+      padding:10px 15px;
+      border-radius:5px;
+      cursor:pointer;
+    }
+
+    section{
+      background:white;
+      margin-bottom:30px;
+      padding:25px;
+      border-radius:12px;
+      box-shadow:0 0 10px rgba(0,0,0,0.1);
+    }
+
+    section h2{
+      margin-bottom:10px;
+    }
+
+    textarea{
+      width:100%;
+      min-height:120px;
+      margin-top:15px;
+      padding:10px;
+      border-radius:8px;
+      border:1px solid #ccc;
+    }
+
+    .save-btn{
+      margin-top:15px;
+      background:green;
+      color:white;
+      border:none;
+      padding:10px 15px;
+      border-radius:5px;
+      cursor:pointer;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+
+  <div class="sidebar">
+
+    <h1>Documentation</h1>
+
+    <div id="sidebar"></div>
+
+  </div>
+
+  <!-- MAIN -->
+
+  <div class="main">
+
+    <div class="topbar">
+
+      <h3 id="welcome"></h3>
+
+      <button class="logout-btn"
+              onclick="logout()">
+
+        Logout
+
+      </button>
+
+    </div>
+
+    <div id="content"></div>
+
+  </div>
+
+  <script>
+
+    // LOGIN CHECK
+
+    if(localStorage.getItem("loggedIn") !== "true"){
+
+      window.location.href = "login.html";
+
+    }
+
+    // USERNAME
+
+    let username =
+      localStorage.getItem("username");
+
+    document.getElementById("welcome")
+    .innerText =
+      "Welcome, " + username;
+
+    // DATA
+
+    let chapters = [];
+
+    for(let i = 1; i <= 10; i++){
+
+      let topics = [];
+
+      for(let j = 1; j <= 5; j++){
+
+        topics.push({
+
+          title: "Topic " + j,
+
+          content:
+            "This is the explanation for Chapter " +
+            i +
+            " Topic " +
+            j +
+            ". You can edit this content."
+
+        });
+
+      }
+
+      chapters.push({
+
+        title: "Chapter " + i,
+
+        topics: topics
+
+      });
+
+    }
+
+    // ELEMENTS
+
+    let sidebar =
+      document.getElementById("sidebar");
+
+    let content =
+      document.getElementById("content");
+
+    // RENDER FUNCTION
+
+    function renderPage(){
+
+      sidebar.innerHTML = "";
+
+      content.innerHTML = "";
+
+      chapters.forEach((chapter, cIndex)=>{
+
+        // SIDEBAR
+
+        let chapterDiv =
+          document.createElement("div");
+
+        chapterDiv.className = "chapter";
+
+        let topicHTML = "";
+
+        chapter.topics.forEach((topic, tIndex)=>{
+
+          topicHTML += `
+            <li onclick="scrollToTopic('topic-${cIndex}-${tIndex}')">
+              ${topic.title}
+            </li>
+          `;
+
+        });
+
+        chapterDiv.innerHTML = `
+
+          <div class="chapter-top">
+
+            <div class="chapter-title">
+              ${chapter.title}
+            </div>
+
+            <button class="edit-btn"
+                    onclick="editChapter(${cIndex})">
+
+              Edit
+
+            </button>
+
+          </div>
+
+          <ul>
+
+            ${topicHTML}
+
+          </ul>
+
+        `;
+
+        sidebar.appendChild(chapterDiv);
+
+        // CONTENT
+
+        chapter.topics.forEach((topic, tIndex)=>{
+
+          let section =
+            document.createElement("section");
+
+          section.id =
+            `topic-${cIndex}-${tIndex}`;
+
+          section.innerHTML = `
+
+            <h2>
+
+              ${chapter.title}
+              -
+              ${topic.title}
+
+            </h2>
+
+            <p id="text-${cIndex}-${tIndex}">
+
+              ${topic.content}
+
+            </p>
+
+            <textarea
+              id="textarea-${cIndex}-${tIndex}">
+${topic.content}
+            </textarea>
+
+            <button class="save-btn"
+                    onclick="saveTopic(${cIndex},${tIndex})">
+
+              Save Changes
+
+            </button>
+
+          `;
+
+          content.appendChild(section);
+
+        });
+
+      });
+
+    }
+
+    // SCROLL
+
+    function scrollToTopic(id){
+
+      document.getElementById(id)
+      .scrollIntoView({
+
+        behavior:"smooth"
+
+      });
+
+    }
+
+    // EDIT CHAPTER
+
+    function editChapter(index){
+
+      let newName =
+        prompt(
+          "Enter new chapter name",
+          chapters[index].title
+        );
+
+      if(newName){
+
+        chapters[index].title = newName;
+
+        renderPage();
+
+      }
+
+    }
+
+    // SAVE TOPIC
+
+    function saveTopic(cIndex,tIndex){
+
+      let textarea =
+        document.getElementById(
+          `textarea-${cIndex}-${tIndex}`
+        );
+
+      let newText =
+        textarea.value;
+
+      chapters[cIndex]
+      .topics[tIndex]
+      .content = newText;
+
+      document.getElementById(
+        `text-${cIndex}-${tIndex}`
+      ).innerText = newText;
+
+      alert("Content Updated");
+
+    }
+
+    // LOGOUT
+
+    function logout(){
+
+      localStorage.clear();
+
+      window.location.href =
+        "login.html";
+
+    }
+
+    // INITIAL LOAD
+
+    renderPage();
+
+  </script>
+
+</body>
+</html>
